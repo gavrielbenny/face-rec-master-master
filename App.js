@@ -33,7 +33,7 @@ const removeUnknowns = (matches) => {
 
 export default class App extends Component {
   state = {
-    host: "http://192.168.1.16:5000",
+    host: "http://192.168.1.17:5000",
     photo: null,
     label: "",
     modalVisible: false,
@@ -93,15 +93,25 @@ export default class App extends Component {
         <View style={styles.container}>
           {!photo && (
             <Card
-              title="Face Recognition Demo"
+              title="Face Recognition Peserta Ujian"
             >
               <Text style={{marginBottom: 10}}>
-                Select a photo of somebody from your library
+                Face Recognition
+              </Text>
+              <Button
+                icon={<Icon name='camera' color='#ffffff' />}
+                buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 20}}
+                title='Open Camera'
+                onPress={this._openCamera}
+               
+              />
+              <Text style={{marginBottom: 10}}>
+                Select a photo from galery to learn a face
               </Text>
               <Button
                 icon={<Icon name='image' color='#ffffff' />}
                 buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 0}}
-                title='Select'
+                title='Open Galery'
                 onPress={this._pickImage}
               />
             </Card>
@@ -138,7 +148,7 @@ export default class App extends Component {
                 icon={<Icon name='image' color='#ffffff' />}
                 buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 0}}
                 title='Select New'
-                onPress={this._pickImage}
+                onPress={this._openCamera}
               />
             </Card>
           )}
@@ -257,6 +267,23 @@ export default class App extends Component {
     if (!result.cancelled) {
       this.setState({ photo: result, identified: null, nothingFound: false, noFaceFound: false });
     }
+  };
+
+  _openCamera = async () => {
+    let result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: false,
+      aspect: [4, 3],
+      quality: 1,
+      base64: false,
+      exif: false
+    });
+    console.log(result);
+
+    if (!result.cancelled) {
+      this.setState({ photo: result, identified: null, nothingFound: false, noFaceFound: false });
+    }
+
   };
 }
 
