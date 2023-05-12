@@ -124,14 +124,8 @@ export default class App extends Component {
               containerStyle={{width: "90%", height: "auto" }}
             >
               <Text style={{marginBottom: 10}}>
-                Tap Identify to see if we can recognize them
+                Identifying...
               </Text>
-              <Button
-                icon={<Icon name='person' color='#ffffff' />}
-                buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 0}}
-                title='Identify'
-                onPress={this._handleUpload}
-              />
             </Card>
           )}
           {photo && identified && (
@@ -148,7 +142,7 @@ export default class App extends Component {
                 icon={<Icon name='image' color='#ffffff' />}
                 buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 0}}
                 title='Select New'
-                onPress={this._openCamera}
+                onPress={this._pickImage}
               />
             </Card>
           )}
@@ -267,6 +261,7 @@ export default class App extends Component {
     if (!result.cancelled) {
       this.setState({ photo: result, identified: null, nothingFound: false, noFaceFound: false });
     }
+    this._handleUpload()
   };
 
   _openCamera = async () => {
@@ -283,6 +278,7 @@ export default class App extends Component {
     if (!result.cancelled) {
       this.setState({ photo: result, identified: null, nothingFound: false, noFaceFound: false });
     }
+    this._handleUpload()
 
   };
 }
