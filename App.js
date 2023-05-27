@@ -1,9 +1,13 @@
 import React, { Component } from 'react';
-import { Platform, StyleSheet, Text, TextInput, View, Image } from 'react-native';
+import { Platform, StyleSheet, Text, TextInput, View, Image, NativeModules, DevSettings } from 'react-native';
 import { ThemeProvider, Card, Button, Icon, Overlay } from 'react-native-elements';
 import * as ImagePicker from 'expo-image-picker';
 import Constants from 'expo-constants';
 import * as Permissions from 'expo-permissions';
+
+
+
+
 
 const createFormData = (photo, body) => {
   const data = new FormData();
@@ -31,9 +35,24 @@ const removeUnknowns = (matches) => {
   });
 }
 
+// const getImage = async () => {
+//   try {
+//     const response = await fetch('http://192.168.148.148:5000/static/result.jpg');
+//     const blob = await response.blob();
+
+//     const fileUri = URL.createObjectURL(blob);
+
+//     setImageUri(fileUri);
+//   } catch (error) {
+
+//   }
+//   console.log(fileUri)
+// }
+
 export default class App extends Component {
+  
   state = {
-    host: "http://192.168.1.17:5000",
+    host: "http://192.168.1.18:5000",
     photo: null,
     label: "",
     modalVisible: false,
@@ -69,7 +88,8 @@ export default class App extends Component {
             this.setState({ nothingFound: true })
           } else {
             // Recognized
-            this.setState({ identified: removeUnknowns(response.names) })
+            this.setState({ identified: removeUnknowns(response.names), photo: source={uri: (`${this.state.host}/${response.img_path}`)}})
+            
           }
           // TODO handle case where multiple faces are detected and none are recognized
         } else if (response.result == 'success'){
@@ -84,7 +104,7 @@ export default class App extends Component {
         alert("Upload failed!");
       });
   };
-
+  
   render() {
     let { photo, label, modalVisible, identified, nothingFound, noFaceFound } = this.state;
 
@@ -139,9 +159,16 @@ export default class App extends Component {
                 We found a match. It looks like {this.state.identified.join(', ')}. How about that!
               </Text>
               <Button
+                icon={<Icon name='camera' color='#ffffff' />}
+                buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 20}}
+                title='Open Camera'
+                onPress={this._openCamera}
+               
+              />
+              <Button
                 icon={<Icon name='image' color='#ffffff' />}
                 buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 0}}
-                title='Select New'
+                title='Open Gallery'
                 onPress={this._pickImage}
               />
             </Card>
@@ -193,9 +220,16 @@ export default class App extends Component {
                 We couldn't find any faces in this photo. Try another one.
               </Text>
               <Button
+                icon={<Icon name='camera' color='#ffffff' />}
+                buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 20}}
+                title='Open Camera'
+                onPress={this._openCamera}
+               
+              />
+              <Button
                 icon={<Icon name='image' color='#ffffff' />}
                 buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 0}}
-                title="Select New"
+                title="Open Galery"
                 onPress={this._pickImage}
               />
             </Card>

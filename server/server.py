@@ -3,8 +3,12 @@ import face_recognition
 import numpy as np
 import PIL.Image
 import os
+import cv2
+import json
+from PIL import Image
+import time
 
-from flask import Flask, request, jsonify, flash, redirect, url_for
+from flask import Flask, request, jsonify, flash, redirect, url_for, make_response
 from werkzeug.utils import secure_filename
 
 UPLOAD_FOLDER = './images'
@@ -33,11 +37,12 @@ for image in os.listdir('./images'):
     face_image = face_recognition.load_image_file(f'./images/{image}')
     train_faces(face_image, image)
 
-def face_match(image):
+def face_match(image, filename):
     # Initialize variables
     face_locations = []
     face_encodings = []
     face_names = []
+    
 
     # Find all the faces and face encodings in the current frame of video
     face_locations = face_recognition.face_locations(image)
@@ -56,18 +61,30 @@ def face_match(image):
             name = known_face_names[best_match_index]
 
         face_names.append(f'{name}')
-    return [face_names, face_locations]
+
+        # kasih kotak
+    for (top, right, bottom, left), name in zip(face_locations, face_names):
+
+        # image= cv2.rectangle(image, (left, top), (right, bottom), (0, 0, 255), 6)
+        # image= cv2.rectangle(image, (left, bottom - 250), (right, bottom), (0, 0, 255), cv2.FILLED)
+        # image= cv2.putText(image, name, (left + 6, bottom - 100), cv2.FONT_HERSHEY_DUPLEX, 6, (255, 255, 255), 3)
+        
+        image= cv2.rectangle(image, (left, top), (right, bottom), (0, 0, 255), 2)
+        image= cv2.rectangle(image, (left, bottom + 35), (right, bottom), (0, 0, 255), -1)
+        image= cv2.putText(image, name, (left + 4, bottom + 20), cv2.FONT_HERSHEY_DUPLEX, 0.7, (255, 255, 255), 1)
+    # img = Image.fromarray(image)
+    # img.show()
+    img = Image.fromarray(image)
     
+    img.save(filename)
+    return [face_names, face_locations]
 
 
 def process_photo(photo):
     memfile = io.BytesIO()
-    print('ini foto')
     photo.save(memfile)
-    print('ini foto2')
     
     image = np.array(PIL.Image.open(memfile).convert('RGB'))
-    print('ini foto3')
    
     return image
 def process_photo2(file):
@@ -102,6 +119,13 @@ def allowed_file(filename):
 #             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 #             return redirect(url_for('upload_file', filename=filename)) 
 
+def get_image():
+    image_binary = cv2.imread('result.jpg')
+    response = make_response(image_binary)
+    response.headers.set('Content-Type', 'image/jpeg')
+    response.headers.set('Content-Disposition', 'attachment', filename='%s.jpg' % 'result.jpg')
+    return response
+
 @app.route('/')
 def index():
     res = { 'result': 'success' }
@@ -124,11 +148,23 @@ def train():
     res = { 'result': 'success' }
     return jsonify(res)
 
-@app.route('/recog', methods=['POST'])
+@app.route('/recog', methods=['POST', 'GET'])
 def recog():
     print('Receiving a photo to recognize...')
 
-    [names, locations] = face_match(process_photo(request.files['photo']))
+    # [names, locations] = [["Gavriel.jpg"], [(2147,2530, 3297, 1380)]]
+    filename = f'static/{time.strftime("%Y%m%d-%H%M%S")}-result.jpg'
+    [names, locations] = face_match(process_photo(request.files['photo']), filename)
     print(f"Recognized {names}")
-    res = {'names': names, 'locations': locations }
+    # img = Image.fromarray(image)
+
+    # img.save('./static/result.jpg')
+    # print(url_for('static', filename= 'result.jpg'))
+
+    
+
+    # img.show()
+    # imageb = json.dumps(image.tolist())
+    res = {'names': names, 'locations': locations, 'img_path': filename}
     return jsonify(res)
+
