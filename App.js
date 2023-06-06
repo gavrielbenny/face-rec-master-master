@@ -52,7 +52,7 @@ const removeUnknowns = (matches) => {
 export default class App extends Component {
   
   state = {
-    host: "http://192.168.1.18:5000",
+    host: "http://192.168.1.5:5000",
     photo: null,
     label: "",
     modalVisible: false,
