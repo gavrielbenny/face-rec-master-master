@@ -71,7 +71,7 @@ def face_match(image, filename):
         
         image= cv2.rectangle(image, (left, top), (right, bottom), (0, 0, 255), 2)
         image= cv2.rectangle(image, (left, bottom + 35), (right, bottom), (0, 0, 255), -1)
-        image= cv2.putText(image, name, (left + 4, bottom + 20), cv2.FONT_HERSHEY_DUPLEX, 0.7, (255, 255, 255), 1)
+        image= cv2.putText(image, name, (left + 4, bottom + 20), cv2.FONT_HERSHEY_DUPLEX, 0.7, (255, 255, 255), 3)
     # img = Image.fromarray(image)
     # img.show()
     img = Image.fromarray(image)

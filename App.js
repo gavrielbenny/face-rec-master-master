@@ -52,7 +52,7 @@ const removeUnknowns = (matches) => {
 export default class App extends Component {
   
   state = {
-    host: "http://192.168.1.5:5000",
+    host: "http://10.5.104.222:5000",
     photo: null,
     label: "",
     modalVisible: false,
@@ -126,12 +126,12 @@ export default class App extends Component {
                
               />
               <Text style={{marginBottom: 10}}>
-                Select a photo from galery to learn a face
+                Select a photo from gallery to learn a face
               </Text>
               <Button
                 icon={<Icon name='image' color='#ffffff' />}
                 buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 0}}
-                title='Open Galery'
+                title='Open Gallery'
                 onPress={this._pickImage}
               />
             </Card>
